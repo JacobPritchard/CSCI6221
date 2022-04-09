@@ -45,10 +45,10 @@ exports.getCurrentWeather = function(){
 	}
 	document.getElementById("wind_deg").innerHTML = "Wind Direction: " + resp.current.wind_deg + " degrees (meteorological)";
 	if(resp.current.rain){
-	  document.getElementById("rain").innerHTML = "Rain Volume: " + resp.current.rain + " mm";
+	  document.getElementById("rain").innerHTML = "Rain Volume: " + resp.current.rain["1h"] + " mm";
 	}
 	if(resp.current.snow){
-	  document.getElementById("snow").innerHTML = "Snow Volume: " + resp.current.snow + " mm";
+	  document.getElementById("snow").innerHTML = "Snow Volume: " + resp.current.snow["1h"] + " mm";
 	}
 	document.getElementById("timezone").innerHTML = "Timezone: " + resp.timezone.replaceAll("_"," ");
 	var sunrise = resp.current.sunrise;
@@ -89,10 +89,8 @@ exports.getMinuteWeather = function(){
 		if(i % 3 == 0){
 			if(i != 0){
 				html += '</div>';
-				console.log("closed"+i);
 			}
 			html += '<div class="row text-center">';
-			console.log("opened"+i);
 		}
 		html += '<div class="col-md-4">';
 		html += img;
@@ -110,13 +108,83 @@ exports.getMinuteWeather = function(){
 		var secs = "0" + date.getSeconds();
 		var t = hours + ':' + min.substr(-2) + ':' + secs.substr(-2);
 		html += '<p class="text-muted">' + t + ' ' + day + '</p>';
-		html += '<p class="text-muted">' + mins[i].precipitation + '% Precipitation</p>';
+		html += '<p class="text-muted">Precipitation: ' + mins[i].precipitation + ' mm</p>';
 		html += "</div>";
 	}
-	if(mins.length % 3 != 0){
-		console.log("closed");
+	if(mins.length-1 % 3 != 0){
 		html += '</div>';
 	}
 	document.getElementById("min").innerHTML = html;
+  });
+}
+
+exports.getHourlyWeather = function(){
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=current,minutely,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  	console.log(resp);
+	var hours = resp.hourly;
+	var html = "";
+	for(var i = 0; i < hours.length; i++){
+		if(i % 3 == 0){
+			if(i != 0){
+				html += '</div>';
+				console.log("closed");
+				document.getElementById("hour").innerHTML += html;
+				html = "";
+			}
+			html += '<div class="row text-center">';
+			console.log("opened");
+		}
+		html += '<div class="col-md-4">';
+		var weather = hours[i].weather[0].description;
+		var w = weather[0].toUpperCase();
+		for(var j = 1; j < weather.length; j++){
+			if(weather[j-1] == " "){
+				w += weather[j].toUpperCase();
+			}else{
+				w += weather[j];
+			}
+		}
+		var imgSrc = hours[i].weather[0].icon;
+		var src = "http://openweathermap.org/img/wn/" + imgSrc + ".png";
+		var img = '<span class="fa-stack fa-4x"><img width="150" height="150" src="'+src+'"/></span><h4 class="my-3">'+w+'</h4>';
+		html += img;
+		var day = "";
+		var time = hours[i].dt;
+		var date = new Date(time * 1000);
+		var hrs = date.getHours();
+		if(hrs >= 12){
+			hrs -= 12;
+			day = "pm";
+		}else{
+			day = "am";
+		}
+		var t = hrs + ':00:00';
+		html += '<h4 class="my-3">' + t + ' ' + day + '</h4>';
+		html += '<p class="text-muted">Temperature: ' + hours[i].temp + ' Degrees Fahrenheit</p>';
+		html += '<p class="text-muted">Feels Like: ' + hours[i].feels_like + ' Degrees Fahrenheit</p>';
+		html += '<p class="text-muted">Atmospheric Pressure: ' + hours[i].pressure + ' hPa</p>';
+		html += '<p class="text-muted">Humidity: ' + hours[i].humidity + '%</p>';
+		html += '<p class="text-muted">Atmospheric Temperature (Dew Point): ' + hours[i].dew_point + ' Degrees Fahrenheit</p>';
+		html += '<p class="text-muted">Cloudiness: ' + hours[i].clouds + '%</p>';
+		html += '<p class="text-muted">Midday UV Index: ' + hours[i].uvi + '</p>';
+		html += '<p class="text-muted">Average Visibility: ' + hours[i].visibility + ' m</p>';
+		html += '<p class="text-muted">Wind Speed: ' + hours[i].wind_speed + ' miles/hour</p>';
+      	if(hours[i].wind_gust){
+	  	  html += '<p class="text-muted">Wind Gust: ' + hours[i].wind_gust + ' miles/hour</p>';
+		}
+		html += '<p class="text-muted">Wind Direction: ' + hours[i].wind_deg + ' degrees (meteorological)</p>';
+		if(hours[i].rain){
+		  html += '<p class="text-muted">Rain Volume: ' + hours[i].rain["1h"] + ' mm</p>';
+		}
+		if(hours[i].snow){
+		  html += '<p class="text-muted">Snow Volume: ' + hours[i].snow["1h"] + ' mm</p>';
+		}
+		html += "</div>";
+	}
+	if(hours.length-1 % 3 != 0){
+		html += '</div>';
+		console.log("closed");
+	}
+	document.getElementById("hour").innerHTML += html;
   });
 }

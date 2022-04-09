@@ -6,6 +6,7 @@ module DocumentEvent
   , inputEvent
   , getCurrentWeather
   , getMinuteWeather
+  , getHourlyWeather
   ) where
 
 import Prelude
@@ -26,3 +27,5 @@ foreign import addEvent :: EventType -> EventHandler -> Effect Unit
 foreign import getCurrentWeather :: Effect Unit
 
 foreign import getMinuteWeather :: Effect Unit
+
+foreign import getHourlyWeather :: Effect Unit
