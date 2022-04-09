@@ -6,7 +6,7 @@ import Data.Maybe (Maybe(..))
 
 import Effect (Effect)
 
-import DocumentEvent (addEvent, inputEvent)
+import DocumentEvent (addEvent, inputEvent, getCurrentWeather)
 
 import Web.HTML (window)
 import Web.HTML.Window (document)
@@ -59,7 +59,7 @@ updateText str (Just el) = setTextContent str (toNode el)
 updateText _ _ = pure unit
 
 testApi = void $ launchAff $ do
-  result <- AX.request (AX.defaultRequest { url = "http://api.openweathermap.org/geo/1.0/direct?q=Washington&limit=3&appid=883f70964bc4427b6582c086f8a59ff7", method = Left GET, responseFormat = ResponseFormat.json })
+  result <- AX.request (AX.defaultRequest { url = "http://api.openweathermap.org/geo/1.0/direct?q=Washington&limit=1&appid=883f70964bc4427b6582c086f8a59ff7", method = Left GET, responseFormat = ResponseFormat.json })
   case result of
     Left err -> log $ "GET /api response failed to decode: " <> AX.printError err
     Right response -> log $ "GET /api response: " <> stringify response.body
@@ -73,4 +73,4 @@ main = do
   log str
   updateText "Hey! It worked!" el
   addEvent inputEvent (inputEventHandler el)
-  testApi
+  getCurrentWeather
