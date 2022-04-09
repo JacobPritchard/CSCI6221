@@ -1,4 +1,4 @@
-module Main where
+module Minute where
 
 import Prelude
 
@@ -6,7 +6,7 @@ import Data.Maybe (Maybe(..))
 
 import Effect (Effect)
 
-import DocumentEvent (addEvent, inputEvent, getCurrentWeather)
+import DocumentEvent (addEvent, inputEvent, getMinuteWeather)
 
 import Web.HTML (window)
 import Web.HTML.Window (document)
@@ -73,4 +73,4 @@ main = do
   log str
   updateText "Hey! It worked!" el
   addEvent inputEvent (inputEventHandler el)
-  getCurrentWeather
+  getMinuteWeather
