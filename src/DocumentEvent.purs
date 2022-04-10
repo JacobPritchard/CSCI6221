@@ -7,6 +7,8 @@ module DocumentEvent
   , getCurrentWeather
   , getMinuteWeather
   , getHourlyWeather
+  , getDailyWeather
+  , getAlerts
   ) where
 
 import Prelude
@@ -29,3 +31,7 @@ foreign import getCurrentWeather :: Effect Unit
 foreign import getMinuteWeather :: Effect Unit
 
 foreign import getHourlyWeather :: Effect Unit
+
+foreign import getDailyWeather :: Effect Unit
+
+foreign import getAlerts :: Effect Unit

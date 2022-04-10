@@ -162,6 +162,9 @@ exports.getHourlyWeather = function(){
 		html += '<h4 class="my-3">' + t + ' ' + day + '</h4>';
 		html += '<p class="text-muted">Temperature: ' + hours[i].temp + ' Degrees Fahrenheit</p>';
 		html += '<p class="text-muted">Feels Like: ' + hours[i].feels_like + ' Degrees Fahrenheit</p>';
+		var pop = hours[i].pop;
+		var p = pop*100;
+		html += '<p class="text-muted">Precipitation Probability: ' + p + '%</p>';
 		html += '<p class="text-muted">Atmospheric Pressure: ' + hours[i].pressure + ' hPa</p>';
 		html += '<p class="text-muted">Humidity: ' + hours[i].humidity + '%</p>';
 		html += '<p class="text-muted">Atmospheric Temperature (Dew Point): ' + hours[i].dew_point + ' Degrees Fahrenheit</p>';
@@ -186,5 +189,112 @@ exports.getHourlyWeather = function(){
 		console.log("closed");
 	}
 	document.getElementById("hour").innerHTML += html;
+  });
+}
+
+exports.getDailyWeather = function(){
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=current,minutely,hourly,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  	console.log(resp);
+	/*var weather = resp.current.weather[0].description;
+	var w = weather[0].toUpperCase();
+	for(var i = 1; i < weather.length; i++){
+		if(weather[i-1] == " "){
+			w += weather[i].toUpperCase();
+		}else{
+			w += weather[i];
+		}
+	}
+	var imgSrc = resp.current.weather[0].icon;
+	var src = "http://openweathermap.org/img/wn/" + imgSrc + ".png";
+	var img = '<span class="fa-stack fa-4x"><img width="150" height="150" src="'+src+'"/></span><h4 class="my-3">'+w+'</h4>';
+	var mins = resp.minutely;
+	var html = "";
+	for(var i = 0; i < mins.length; i++){
+		if(i % 3 == 0){
+			if(i != 0){
+				html += '</div>';
+			}
+			html += '<div class="row text-center">';
+		}
+		html += '<div class="col-md-4">';
+		html += img;
+		var day = "";
+		var time = mins[i].dt;
+		var date = new Date(time * 1000);
+		var hours = date.getHours();
+		if(hours >= 12){
+			hours -= 12;
+			day = "pm";
+		}else{
+			day = "am";
+		}
+		var min = "0" + date.getMinutes();
+		var secs = "0" + date.getSeconds();
+		var t = hours + ':' + min.substr(-2) + ':' + secs.substr(-2);
+		html += '<p class="text-muted">' + t + ' ' + day + '</p>';
+		html += '<p class="text-muted">Precipitation: ' + mins[i].precipitation + ' mm</p>';
+		html += "</div>";
+	}
+	if(mins.length-1 % 3 != 0){
+		html += '</div>';
+	}
+	document.getElementById("min").innerHTML = html;*/
+  });
+}
+
+exports.getAlerts = function(){
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=current,minutely,hourly,daily&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+	console.log(resp);
+	var html = "";
+	if(resp.alerts){
+		var alerts = resp.alerts;
+		for(var i = 0; i < alerts.length; i++){
+			if(i % 3 == 0){
+				if(i != 0){
+					html += '</div>';
+				}
+				html += '<div class="row text-center">';
+			}
+			html += '<div class="col-md-4">';
+			html += '<h4 class="my-3">Alert Source: ' + alerts[i].sender_name + '</h4>';
+			html += '<h4 class="my-3">Alert Name: ' + alerts[i].event + '</h4>';
+			html += '<h4 class="my-3">Alert Description: ' + alerts[i].description + '</h4>';
+			var day = "";
+			var time = alerts[i].start;
+			var date = new Date(time * 1000);
+			var hours = date.getHours();
+			if(hours >= 12){
+				hours -= 12;
+				day = "pm";
+			}else{
+				day = "am";
+			}
+			var mins = "0" + date.getMinutes();
+			var secs = "0" + date.getSeconds();
+			var t = hours + ':' + mins.substr(-2) + ':' + secs.substr(-2);
+			html += '<h4 class="my-3">Alert Start Time: ' + t + ' ' + day + '</h4';
+			var endDay = "";
+			var endTime = alerts[i].end;
+			var endDate = new Date(endTime * 1000);
+			var endHours = endDate.getHours();
+			if(endHours >= 12){
+				endHours -= 12;
+				endDay = "pm";
+			}else{
+				endDay = "am";
+			}
+			var endMins = "0" + endDate.getMinutes();
+			var endSecs = "0" + endDate.getSeconds();
+			var t1 = endHours + ':' + endMins.substr(-2) + ':' + endSecs.substr(-2);
+			html += '<h4 class="my-3">Alert End Time: ' + t1 + ' ' + endDay + '</h4';
+			html += "</div>";
+		}
+		if(alerts.length-1 % 3 != 0){
+			html += '</div>';
+		}
+	}else{
+		html += '<div class="row text-center"><h4 class="my-3">No Active Weather Alerts</h4></div>';
+	}
+	document.getElementById("alerts").innerHTML = html;
   });
 }
