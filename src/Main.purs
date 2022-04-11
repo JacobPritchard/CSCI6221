@@ -73,4 +73,5 @@ main = do
   log str
   updateText "Hey! It worked!" el
   addEvent inputEvent (inputEventHandler el)
+  testApi
   getPosition

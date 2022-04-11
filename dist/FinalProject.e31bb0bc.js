@@ -45728,6 +45728,7 @@ var main = function __do() {
   Effect_Class_Console.log(Effect_Class.monadEffectEffect)(str)();
   updateText("Hey! It worked!")(el)();
   DocumentEvent.addEvent(DocumentEvent.inputEvent)(inputEventHandler(el))();
+  testApi();
   return DocumentEvent.getPosition();
 };
 
@@ -45776,7 +45777,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59204" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60405" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
