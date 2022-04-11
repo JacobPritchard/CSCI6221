@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+  <link href="style.css" rel="stylesheet" />
+  <script>
+    function getLocWeather(lat, lon, name){
+	$.get("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  	  console.log(resp);
+	  var html = '<div class="text-center"><h4 class="my-3">Weather for ' + name + '</h4>';
+	  html += '<h4 class="my-3">Temperature: ' + resp.current.temp + ' Degrees Fahrenheit</h4>';
+	  html += '<h4 class="my-3">Feels Like: ' + resp.current.feels_like + ' Degrees Fahrenheit</h4>';
+	  var weather = resp.current.weather[0].description;
+	  var w = weather[0].toUpperCase();
+	  for(var i = 1; i < weather.length; i++){
+	    if(weather[i-1] == " "){
+	      w += weather[i].toUpperCase();
+	    }else{
+	      w += weather[i];
+	    }
+	  }
+       var imgSrc = resp.current.weather[0].icon;
+       var src = "http://openweathermap.org/img/wn/" + imgSrc + ".png";
+       html += '<span class="fa-stack fa-4x"><img width="150" height="150" src="'+src+'"/></span><h4 class="my-3">'+w+'</h4>';
+       html += '<h4 class="my-3">Atmospheric Pressure: ' + resp.current.pressure + ' hPa</h4>';
+       html += '<h4 class="my-3">Humidity: ' + resp.current.humidity + '%</h4>';
+       html += '<h4 class="my-3">Atmospheric Temperature (Dew Point): ' + resp.current.dew_point + ' Degrees Fahrenheit</h4>';
+       html += '<h4 class="my-3">Cloudiness: ' + resp.current.clouds + '%</h4>';
+       html += '<h4 class="my-3">Midday UV Index: ' + resp.current.uvi + '</h4>';
+       html += '<h4 class="my-3">Average Visibility: ' + resp.current.visibility + ' m</h4>';
+       html += '<h4 class="my-3">Wind Speed: ' + resp.current.wind_speed + ' miles/hour</h4>';
+       if(resp.current.wind_gust){
+	    html += '<h4 class="my-3">Wind Gust: ' + resp.current.wind_gust + ' miles/hour</h4>';
+       }
+       html += '<h4 class="my-3">Wind Direction: ' + resp.current.wind_deg + ' degrees (meteorological)</h4>';
+       if(resp.current.rain){
+         html += '<h4 class="my-3">Rain Volume: ' + resp.current.rain["1h"] + ' mm</h4>';
+       }
+       if(resp.current.snow){
+         html += '<h4 class="my-3">Snow Volume: ' + resp.current.snow["1h"] + ' mm</h4>';
+	  }
+	  html += '<h4 class="my-3">Timezone: ' + resp.timezone.replaceAll("_"," ") + '</h4>';
+ 	  var sunrise = resp.current.sunrise;
+	  var riseDate = new Date(sunrise * 1000);
+	  var riseHours = riseDate.getHours();
+	  var riseMins = "0" + riseDate.getMinutes();
+	  var riseSecs = "0" + riseDate.getSeconds();
+	  var riseTime = riseHours + ':' + riseMins.substr(-2) + ':' + riseSecs.substr(-2);
+	  html += '<h4 class="my-3">Sunrise: ' + riseTime + ' am</h4>';
+	  var sunset = resp.current.sunset;
+	  var setDate = new Date(sunset * 1000);
+	  var setHours = setDate.getHours()-12;
+	  var setMins = "0" + setDate.getMinutes();
+	  var setSecs = "0" + setDate.getSeconds();
+	  var setTime = setHours + ':' + setMins.substr(-2) + ':' + setSecs.substr(-2);
+	  html += '<h4 class="my-3">Sunset: ' + setTime + ' pm</h4>';
+	  document.getElementById("loc").innerHTML = html;
+	});
+    }
+    function searchLoc(num){
+	var input = document.getElementById("input");
+	var str = input.value;
+	if(str){
+	  var query = "http://api.openweathermap.org/geo/1.0/direct?q=" + str + "&limit=" + num + "&appid=883f70964bc4427b6582c086f8a59ff7";
+	  $.get(query, function(resp){
+	    console.log(resp);
+	    var html = "";
+	    if(resp[0]){
+		html = '<div class="row text-center">';
+		for(var i = 0; i < resp.length; i++){
+		  var lat = resp[i].lat;
+		  var lon = resp[i].lon;
+		  html += '<div class="col-md-4">';
+		  if(resp[i].state){
+		    var name = resp[i].name + ' ' + resp[i].state;
+		    html += '<h4 class="my-3" style="background:DodgerBlue" onclick="getLocWeather(' + lat + ',' + lon + ',\'' + name + '\')">Weather for ' + name + '</h4>';
+		  }else{
+		    var name = resp[i].name + ' ' + resp[i].country;
+		    html += '<h4 class="my-3" style="background:DodgerBlue" onclick="getLocWeather(' + lat + ',' + lon + ',\'' + name + '\')">Weather for ' + name + '</h4>';
+		  }
+		  html += '</div>';
+		}
+		html += '</div>';
+		html += '<div class="text-center"><h4 class="my-3">Not Finding What You\'re Looking For? Click Here For More Results.<br><button id="more" onclick="searchLoc(10)">More Results</button></h4>';
+	    }else{
+		html = '<div class="text-center"><h4 class="my-3">No Results Found for ' + str + '. Please Try Again.</h4>';
+	    }
+	    document.getElementById("loc").innerHTML = html;
+	  });
+	}
+    }
+  </script>
+</head>
+<body id="page-top" style="background:DeepSkyBlue">
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="background:DodgerBlue">
+    <div class="container">
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars ms-1"></i>
+      </button>
+	<div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Current Weather</a></li>
+	    <li class="nav-item"><a class="nav-link" href="minute.html">Minute Forecast</a></li>
+	    <li class="nav-item"><a class="nav-link" href="hour.html">Hourly Forecast</a></li>
+	    <li class="nav-item"><a class="nav-link" href="daily.html">Daily Forecast</a></li>
+	    <li class="nav-item"><a class="nav-link" href="alerts.html">National Alerts</a></li>
+	    <li class="nav-item"><a class="nav-link" href="loc.html">Search Location</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <br><br>
+  <section class="page-section" id="sec">
+    <div class="container" id="cont">
+      <div class="text-center">
+        <h2 class="section-heading text-uppercase">Search Location</h2>
+	  <input id="input" placeholder="Search By City Name" />
+	  <button id="search" onclick="searchLoc(3)">Search</button>
+	</div>
+	<div id="loc"></div>
+    </div>
+  </section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="./loc.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scripts.js"></script>
+  <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+</body>
+</html>

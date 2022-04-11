@@ -17,7 +17,7 @@ exports.addEvent = function (eventType) {
 exports.getCurrentWeather = function(){
   $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=minutely,hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
   	console.log(resp);
-      document.getElementById("temp").innerHTML = "Temperature: " + resp.current.temp + " Degrees Fahrenheit";
+     document.getElementById("temp").innerHTML = "Temperature: " + resp.current.temp + " Degrees Fahrenheit";
 	document.getElementById("feel").innerHTML = "Feels Like: " + resp.current.feels_like + " Degrees Fahrenheit";
 	var weather = resp.current.weather[0].description;
 	var w = weather[0].toUpperCase();
@@ -28,11 +28,11 @@ exports.getCurrentWeather = function(){
 			w += weather[i];
 		}
 	}
-      document.getElementById("weather").innerHTML = w;
+     document.getElementById("weather").innerHTML = w;
 	var imgSrc = resp.current.weather[0].icon;
 	var src = "http://openweathermap.org/img/wn/" + imgSrc + ".png";
 	var img = '<img width="150" height="150" src="'+src+'"/>';
-      document.getElementById("weatherImg").innerHTML = img;
+     document.getElementById("weatherImg").innerHTML = img;
 	document.getElementById("pressure").innerHTML = "Atmospheric Pressure: " + resp.current.pressure + " hPa";
 	document.getElementById("humidity").innerHTML = "Humidity: " + resp.current.humidity + "%";
 	document.getElementById("dew").innerHTML = "Atmospheric Temperature (Dew Point): " + resp.current.dew_point + " Degrees Fahrenheit";
