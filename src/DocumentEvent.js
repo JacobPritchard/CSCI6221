@@ -14,9 +14,47 @@ exports.addEvent = function (eventType) {
   }
 }
 
-exports.getCurrentWeather = function(){
-  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=minutely,hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+exports.getPosition = function(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(getCurrentWeather);
+  }else{ 
+    console.log("Geolocation is not supported by this browser.");
+  }
+}
+
+function getName(lat, lon){
+  var name = "";
+  var scriptUrl = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial";
+  $.ajax({
+     url: scriptUrl,
+     type: 'get',
+     dataType: 'json',
+     async: false,
+     success: function(data) {
+         name = data.name;
+     } 
+  });
+  return name;
+}
+
+function getCurrentWeather(position){
+  var lat = sessionStorage.getItem("lat");
+  var lon = sessionStorage.getItem("lon");
+  var name = sessionStorage.getItem("name");
+  if(!lat){
+    lat = position.coords.latitude;
+    sessionStorage.setItem("lat", lat);
+  }
+  if(!lon){
+    lon = position.coords.longitude;
+    sessionStorage.setItem("lon", lon);
+  }
+  if(!name){
+    name = getName(lat, lon);
+  }
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=minutely,hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
   	console.log(resp);
+	document.getElementById("loc").innerHTML = name;
      document.getElementById("temp").innerHTML = "Temperature: " + resp.current.temp + " Degrees Fahrenheit";
 	document.getElementById("feel").innerHTML = "Feels Like: " + resp.current.feels_like + " Degrees Fahrenheit";
 	var weather = resp.current.weather[0].description;
@@ -33,7 +71,7 @@ exports.getCurrentWeather = function(){
 	var src = "http://openweathermap.org/img/wn/" + imgSrc + ".png";
 	var img = '<img width="150" height="150" src="'+src+'"/>';
      document.getElementById("weatherImg").innerHTML = img;
-	document.getElementById("pressure").innerHTML = "Atmospheric Pressure: " + resp.current.pressure + " hPa";
+     document.getElementById("pressure").innerHTML = "Atmospheric Pressure: " + resp.current.pressure + " hPa";
 	document.getElementById("humidity").innerHTML = "Humidity: " + resp.current.humidity + "%";
 	document.getElementById("dew").innerHTML = "Atmospheric Temperature (Dew Point): " + resp.current.dew_point + " Degrees Fahrenheit";
 	document.getElementById("clouds").innerHTML = "Cloudiness: " + resp.current.clouds + "%";
@@ -69,7 +107,9 @@ exports.getCurrentWeather = function(){
 }
 
 exports.getMinuteWeather = function(){
-  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  var lat = sessionStorage.getItem("lat");
+  var lon = sessionStorage.getItem("lon");
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
   	console.log(resp);
 	var weather = resp.current.weather[0].description;
 	var w = weather[0].toUpperCase();
@@ -119,7 +159,9 @@ exports.getMinuteWeather = function(){
 }
 
 exports.getHourlyWeather = function(){
-  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=current,minutely,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  var lat = sessionStorage.getItem("lat");
+  var lon = sessionStorage.getItem("lon");
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=current,minutely,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
   	console.log(resp);
 	var hours = resp.hourly;
 	var html = "";
@@ -190,7 +232,9 @@ exports.getHourlyWeather = function(){
 }
 
 exports.getDailyWeather = function(){
-  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=current,minutely,hourly,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  var lat = sessionStorage.getItem("lat");
+  var lon = sessionStorage.getItem("lon");
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=current,minutely,hourly,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
   	console.log(resp);
 	var days = resp.daily;
 	var html = "";
@@ -332,7 +376,9 @@ exports.getDailyWeather = function(){
 }
 
 exports.getAlerts = function(){
-  $.get("https://api.openweathermap.org/data/2.5/onecall?lat=38.8950368&lon=-77.0365427&exclude=current,minutely,hourly,daily&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
+  var lat = sessionStorage.getItem("lat");
+  var lon = sessionStorage.getItem("lon");
+  $.get("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=current,minutely,hourly,daily&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function(resp){
 	console.log(resp);
 	var html = "";
 	if(resp.alerts){

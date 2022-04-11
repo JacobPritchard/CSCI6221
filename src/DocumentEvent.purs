@@ -4,7 +4,7 @@ module DocumentEvent
   , EventType
   , clickEvent
   , inputEvent
-  , getCurrentWeather
+  , getPosition
   , getMinuteWeather
   , getHourlyWeather
   , getDailyWeather
@@ -26,7 +26,7 @@ foreign import inputEvent :: EventType
 
 foreign import addEvent :: EventType -> EventHandler -> Effect Unit
 
-foreign import getCurrentWeather :: Effect Unit
+foreign import getPosition :: Effect Unit
 
 foreign import getMinuteWeather :: Effect Unit
 

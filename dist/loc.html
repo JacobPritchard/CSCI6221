@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css">
   <link href="/style.e308ff8e.css" rel="stylesheet">
   <script>function getLocWeather(lat, lon, name) {
+  sessionStorage.setItem("lat", lat);
+  sessionStorage.setItem("lon", lon);
+  sessionStorage.setItem("name", name);
   $.get("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly,daily,alerts&appid=883f70964bc4427b6582c086f8a59ff7&units=imperial", function (resp) {
     console.log(resp);
     var html = '<div class="text-center"><h4 class="my-3">Weather for ' + name + '</h4>';
