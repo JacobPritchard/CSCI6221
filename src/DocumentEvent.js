@@ -200,7 +200,9 @@ exports.getHourlyWeather = function(){
 		}
 		var t = hrs + ':00:00';
 		html += '<h4 class="my-3">' + t + ' ' + day + '</h4>';
-		html += '<p class="text-muted">Temperature: ' + hours[i].temp + ' Degrees Fahrenheit</p>';
+		html += '<h4 class="my-3">Temperature: ' + hours[i].temp + ' Degrees Fahrenheit</h4>';
+		html += '<button id="btn'+i+'" onclick="show('+i+')">More</button>';
+		html += '<div id="div'+i+'" style="display:none">';
 		html += '<p class="text-muted">Feels Like: ' + hours[i].feels_like + ' Degrees Fahrenheit</p>';
 		var pop = hours[i].pop;
 		var p = pop*100;
@@ -222,6 +224,7 @@ exports.getHourlyWeather = function(){
 		if(hours[i].snow){
 		  html += '<p class="text-muted">Snow Volume: ' + hours[i].snow["1h"] + ' mm</p>';
 		}
+		html += "</div>";
 		html += "</div>";
 	}
 	if(hours.length-1 % 3 != 0){
@@ -278,6 +281,8 @@ exports.getDailyWeather = function(){
 		html += '<p class="text-muted">Daytime Temperature: ' + days[i].temp.day + ' Degrees Fahrenheit</p>';
 		html += '<p class="text-muted">Evening Temperature: ' + days[i].temp.eve + ' Degrees Fahrenheit</p>';
 		html += '<p class="text-muted">Nighttime Temperature: ' + days[i].temp.night + ' Degrees Fahrenheit</p>';
+		html += '<button id="btn'+i+'" onclick="show('+i+')">More</button>';
+		html += '<div id="div'+i+'" style="display:none">';
 		html += '<p class="text-muted">Morning Temperature Feels Like: ' + days[i].feels_like.morn + ' Degrees Fahrenheit</p>';
 		html += '<p class="text-muted">Daytime Temperature Feels Like: ' + days[i].feels_like.day + ' Degrees Fahrenheit</p>';
 		html += '<p class="text-muted">Evening Temperature Feels Like: ' + days[i].feels_like.eve + ' Degrees Fahrenheit</p>';
@@ -366,6 +371,7 @@ exports.getDailyWeather = function(){
 		if(days[i].snow){
 		  html += '<p class="text-muted">Snow Volume: ' + days[i].snow + ' mm</p>';
 		}
+		html += "</div>";
 		html += "</div>";
 	}
 	if(days.length-1 % 3 != 0){
