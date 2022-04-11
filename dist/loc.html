@@ -110,6 +110,13 @@ function searchLoc(num) {
       document.getElementById("loc").innerHTML = html;
     });
   }
+}
+
+function resetPosition(position) {
+  sessionStorage.setItem("lat", "");
+  sessionStorage.setItem("lon", "");
+  sessionStorage.setItem("name", "");
+  document.location.href = 'index.html';
 }</script>
 </head>
 <body id="page-top" style="background:DeepSkyBlue">
@@ -139,7 +146,8 @@ function searchLoc(num) {
 	  <input id="input" placeholder="Search By City Name">
 	  <button id="search" onclick="searchLoc(3)">Search</button>
 	</div>
-	<div id="loc"></div>
+	<div id="loc"></div><br>
+	<div class="text-center"><button id="reset" onclick="resetPosition()">My Location</button></div>
     </div>
   </section>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
